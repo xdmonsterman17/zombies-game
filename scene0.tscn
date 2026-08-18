@@ -28,6 +28,8 @@ edge_max_error = 0.2
 
 [sub_resource type="BoxMesh" id="BoxMesh_gyc6d"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_gyc6d"]
+
 [node name="Scene0" type="Node3D" unique_id=2113724079]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2087179579]
@@ -41,13 +43,12 @@ environment = SubResource("Environment_scpmv")
 
 [node name="SpawnManager" parent="." unique_id=893123325 instance=ExtResource("1_5a7p6")]
 zombie_scene = ExtResource("2_g6sgh")
-default_room = "SpawnRoom"
 
 [node name="WaveManager" parent="." unique_id=466661713 instance=ExtResource("4_scpmv")]
-target_room = "SpawnRoom"
 
-[node name="SpawnRoom" type="NavigationRegion3D" parent="." unique_id=362494419]
+[node name="SpawnRoom" type="NavigationRegion3D" parent="." unique_id=362494419 groups=["Room"]]
 navigation_mesh = SubResource("NavigationMesh_6qx4q")
+metadata/unlocked = true
 
 [node name="Floor" type="StaticBody3D" parent="SpawnRoom" unique_id=1717068960]
 transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, -0.5, 0)
@@ -89,6 +90,12 @@ metadata/Enabled = true
 
 [node name="Position" parent="SpawnRoom/WindowSpawn2" index="0" unique_id=1661275829]
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 1.2152378e-07, 0, -1.39007)
+
+[node name="Area3D" type="Area3D" parent="SpawnRoom" unique_id=149267278]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpawnRoom/Area3D" unique_id=772965925]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+shape = SubResource("BoxShape3D_gyc6d")
 
 [editable path="SpawnRoom/WindowSpawn"]
 [editable path="SpawnRoom/WindowSpawn2"]

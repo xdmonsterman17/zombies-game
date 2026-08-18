@@ -10,30 +10,8 @@ const SPAWN_GROUP := \"ZombieSpawn\"
 ## MultiplayerSpawner's \"Auto Spawn List\" in the Inspector.
 @export var zombie_scene: PackedScene
 
-## Optional: a room that's unlocked from the start, no unlock_room() call
-## needed. Must match the name of that room's container Node3D exactly.
-@export var default_room: String = \"\"
-
 @onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
 @onready var zombies_container: Node3D = $Zombies
-
-var unlocked_rooms: Array[String] = []
-
-
-func _ready() -> void:
-	if not default_room.is_empty():
-		unlocked_rooms.append(default_room)
-
-
-## Call when a room gets unlocked (door opened, key found, etc.).
-func unlock_room(room_name: String) -> void:
-	if not unlocked_rooms.has(room_name):
-		unlocked_rooms.append(room_name)
-
-
-## Call if a room should stop spawning zombies.
-func lock_room(room_name: String) -> void:
-	unlocked_rooms.erase(room_name)
 
 
 ## Finds every window in the ZombieSpawn group whose parent node is
@@ -44,31 +22,24 @@ func get_windows_in_room(room_name: String) -> Array:
 	return all_windows.filter(func(w): return w.get_parent().name == room_name)
 
 
-func spawn_zombie_in_room(room_name: String = default_room) -> void:
+func spawn_zombie_in_room(room_name: String) -> Node:
 	if not multiplayer.is_server():
-		return
+		return null
 
 	if room_name.is_empty():
-		push_warning(\"SpawnManager: no room_name given and no default_room set\")
-		return
-
-	if not unlocked_rooms.has(room_name):
-		push_warning(\"SpawnManager: room '%s' is not unlocked\" % room_name)
-		return
+		push_warning(\"SpawnManager: no room_name given\")
+		return null
 
 	var candidates := get_windows_in_room(room_name)
 	if candidates.is_empty():
 		push_warning(\"SpawnManager: no windows found under a node named '%s'\" % room_name)
-		return
+		return null
 
 	var window: Node3D = candidates.pick_random()
 	var zombie := zombie_scene.instantiate()
 	zombies_container.add_child(zombie, true)
 	zombie.setup(window)
-
-
-func _on_timer_timeout() -> void:
-	spawn_zombie_in_room()
+	return zombie
 "
 
 [node name="SpawnManager" type="Node" unique_id=893123325]

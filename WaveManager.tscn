@@ -6,25 +6,25 @@ script/source = "extends Node
 
 @export var zombies_per_wave: int = 5
 @export var spawn_delay: float = 1.0
-@export var wave_delay: float = 10.0
-@export var target_room: String = \"\"
 
 @onready var spawn_manager = get_parent().get_node(\"SpawnManager\")
 
 var current_wave: int = 0
 var zombies_spawned_this_wave: int = 0
-var wave_timer: Timer
+var wave_zombies: Array = []
 var spawn_timer: Timer
+var available_rooms: Array = []
 
 
 func _ready() -> void:
 	if not multiplayer.is_server():
 		return
 	
-	# Create and setup timers
-	wave_timer = Timer.new()
-	add_child(wave_timer)
-	wave_timer.timeout.connect(_on_wave_timer_timeout)
+	# Find all Room group siblings
+	available_rooms = get_parent().get_tree().get_nodes_in_group(\"Room\")
+	available_rooms = available_rooms.filter(func(r): return r.get_parent() == get_parent())
+	
+	print(\"Found rooms: \", available_rooms.map(func(r): return r.name))
 	
 	spawn_timer = Timer.new()
 	add_child(spawn_timer)
@@ -43,25 +43,50 @@ func start_waves() -> void:
 func start_next_wave() -> void:
 	current_wave += 1
 	zombies_spawned_this_wave = 0
+	wave_zombies.clear()
 	
 	print(\"Wave %d starting\" % current_wave)
 	
 	spawn_timer.start(spawn_delay)
 
 
+func _get_room_with_player() -> String:
+	var players = get_tree().get_nodes_in_group(\"players\")
+	if players.is_empty():
+		return \"\"
+	
+	for room in available_rooms:
+		if room.get_meta(\"unlocked\", false):
+			return room.name
+	
+	return \"\"
+
+
 func _on_spawn_timer_timeout() -> void:
 	if zombies_spawned_this_wave < zombies_per_wave:
-		spawn_manager.spawn_zombie_in_room(target_room)
+		var target_room = _get_room_with_player()
+		if target_room.is_empty():
+			print(\"WaveManager: No unlocked room with a player found\")
+			return
+		
+		var zombie = spawn_manager.spawn_zombie_in_room(target_room)
+		if zombie:
+			wave_zombies.append(zombie)
+			zombie.died.connect(_on_zombie_died.bind(zombie))
 		zombies_spawned_this_wave += 1
 	else:
 		spawn_timer.stop()
-		wave_timer.start(wave_delay)
 
 
-func _on_wave_timer_timeout() -> void:
-	wave_timer.stop()
-	start_next_wave()
+func _on_zombie_died(zombie) -> void:
+	wave_zombies.erase(zombie)
+	
+	if wave_zombies.is_empty():
+		print(\"Wave %d complete, starting next wave in 5 seconds\" % current_wave)
+		await get_tree().create_timer(5.0).timeout
+		start_next_wave()
 "
 
 [node name="WaveManager" type="Node" unique_id=466661713]
 script = SubResource("GDScript_g7b7a")
+zombies_per_wave = 3

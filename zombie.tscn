@@ -6,12 +6,15 @@ script/source = "extends CharacterBody3D
 
 enum State { APPROACHING, BREACHING, CHASING }
 
+signal died
+
 @export var move_speed: float = 3.0
 @export var chase_speed: float = 3.5
 @export var attack_range: float = 1.5
 @export var attack_damage: float = 10.0
 @export var attack_cooldown: float = 1.0
 @export var breach_wait_time: float = 1.2
+@export var max_health: float = 30.0
 
 @onready var nav_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -21,6 +24,7 @@ var state: State = State.APPROACHING
 var entry_point: Vector3
 var target_player: Node3D = null
 var can_attack: bool = true
+var current_health: float
 
 
 ## Call right after add_child() -- reads the window's spawn position and
@@ -32,6 +36,7 @@ func setup(window: Node3D) -> void:
 
 
 func _ready() -> void:
+	current_health = max_health
 	if not multiplayer.is_server():
 		set_physics_process(false)
 		return
@@ -121,6 +126,17 @@ func _try_attack() -> void:
 		animation_player.play(\"attack\")
 	await get_tree().create_timer(attack_cooldown).timeout
 	can_attack = true
+
+
+func take_damage(amount: float) -> void:
+	current_health -= amount
+	if current_health <= 0.0:
+		die()
+
+
+func die() -> void:
+	died.emit()
+	queue_free()
 "
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gyc6d"]
