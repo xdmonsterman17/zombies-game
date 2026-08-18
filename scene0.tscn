@@ -2,6 +2,25 @@
 
 [ext_resource type="PackedScene" uid="uid://bh1x74de1dmf1" path="res://SpawnManager.tscn" id="1_5a7p6"]
 [ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://WindowSpawn.tscn" id="2_c6aqj"]
+[ext_resource type="PackedScene" uid="uid://c3cvvg1ger8cq" path="res://zombie.tscn" id="2_g6sgh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_c6aqj"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_g6sgh"]
+sky_material = SubResource("ProceduralSkyMaterial_c6aqj")
+
+[sub_resource type="Environment" id="Environment_scpmv"]
+background_mode = 2
+sky = SubResource("Sky_g6sgh")
+glow_enabled = true
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_6qx4q"]
+vertices = PackedVector3Array(-1.25, 0.5, 4.5686283, -1.25, 0.5, 4.8186283, -1, 0.5, 4.8186283, 1, 0.5, 4.8186283, 1.25, 0.5, 4.8186283, 1.25, 0.5, 4.5686283, 1.25, 0.5, -4.6813717, 1.25, 0.5, -4.9313717, 1, 0.5, -4.9313717, -1, 0.5, -4.9313717, -1.25, 0.5, -4.9313717, -1.25, 0.5, -4.6813717, -1, 0.5, 6.5686283, 1, 0.5, 6.5686283, -4.5, 0.5, -4.6813717, -4.5, 0.5, 4.5686283, 1, 0.5, -6.6813717, -1, 0.5, -6.6813717, 4.5, 0.5, -4.6813717, 4.5, 0.5, 4.5686283)
+polygons = [PackedInt32Array(2, 1, 0), PackedInt32Array(5, 4, 3), PackedInt32Array(8, 7, 6), PackedInt32Array(11, 10, 9), PackedInt32Array(3, 13, 2), PackedInt32Array(2, 13, 12), PackedInt32Array(9, 6, 11), PackedInt32Array(11, 6, 5), PackedInt32Array(11, 5, 3), PackedInt32Array(11, 3, 0), PackedInt32Array(3, 2, 0), PackedInt32Array(11, 0, 14), PackedInt32Array(14, 0, 15), PackedInt32Array(9, 17, 8), PackedInt32Array(8, 17, 16), PackedInt32Array(19, 5, 18), PackedInt32Array(18, 5, 6), PackedInt32Array(9, 8, 6)]
+geometry_parsed_geometry_type = 1
+edge_max_error = 0.2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g7b7a"]
 
@@ -9,10 +28,19 @@
 
 [node name="Scene0" type="Node3D" unique_id=2113724079]
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2087179579]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=714141421]
+environment = SubResource("Environment_scpmv")
+
 [node name="SpawnManager" parent="." unique_id=893123325 instance=ExtResource("1_5a7p6")]
+zombie_scene = ExtResource("2_g6sgh")
 default_room = "SpawnRoom"
 
-[node name="SpawnRoom" type="Node3D" parent="." unique_id=1757941548]
+[node name="SpawnRoom" type="NavigationRegion3D" parent="." unique_id=362494419]
+navigation_mesh = SubResource("NavigationMesh_6qx4q")
 
 [node name="Floor" type="StaticBody3D" parent="SpawnRoom" unique_id=1717068960]
 transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, -0.5, 0)
@@ -23,15 +51,46 @@ shape = SubResource("BoxShape3D_g7b7a")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnRoom/Floor/CollisionShape3D" unique_id=1777809759]
 mesh = SubResource("BoxMesh_gyc6d")
 
+[node name="Floor2" type="StaticBody3D" parent="SpawnRoom" unique_id=672925664]
+transform = Transform3D(2.7874928, 0, 0, 0, 1, 0, 0, 0, 2.181447, 0, -0.5, 6.1025395)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpawnRoom/Floor2" unique_id=1373762149]
+shape = SubResource("BoxShape3D_g7b7a")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnRoom/Floor2/CollisionShape3D" unique_id=605648471]
+mesh = SubResource("BoxMesh_gyc6d")
+
+[node name="Floor3" type="StaticBody3D" parent="SpawnRoom" unique_id=1610384757]
+transform = Transform3D(2.7874928, 0, 0, 0, 1, 0, 0, 0, 2.181447, 0, -0.5, -6.090648)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpawnRoom/Floor3" unique_id=1213384528]
+shape = SubResource("BoxShape3D_g7b7a")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnRoom/Floor3/CollisionShape3D" unique_id=1196322753]
+mesh = SubResource("BoxMesh_gyc6d")
+
 [node name="WindowSpawn" parent="SpawnRoom" unique_id=1470716454 instance=ExtResource("2_c6aqj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
 metadata/Enabled = true
+
+[node name="Position" parent="SpawnRoom/WindowSpawn" index="0" unique_id=1661275829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.1816268)
 
 [node name="WindowSpawn2" parent="SpawnRoom" unique_id=1517269612 instance=ExtResource("2_c6aqj")]
 transform = Transform3D(-0.99999994, 0, -8.742277e-08, 0, 1, 0, 8.742277e-08, 0, -0.99999994, 0, 0, 5)
 metadata/Enabled = true
 
+[node name="Position" parent="SpawnRoom/WindowSpawn2" index="0" unique_id=1661275829]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 1.2152378e-07, 0, -1.39007)
+
 [node name="Timer" type="Timer" parent="." unique_id=587302835]
 autostart = true
 
+[node name="Camera3D" type="Camera3D" parent="." unique_id=46041103]
+transform = Transform3D(-0.0037117358, 0, -0.99999315, 0, 1, 0, 0.99999315, 0, -0.0037117358, -7.0273056, 2.824019, 0)
+current = true
+
 [connection signal="timeout" from="Timer" to="SpawnManager" method="_on_timer_timeout"]
+
+[editable path="SpawnRoom/WindowSpawn"]
+[editable path="SpawnRoom/WindowSpawn2"]

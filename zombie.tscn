@@ -1,0 +1,146 @@
+[gd_scene format=3 uid="uid://c3cvvg1ger8cq"]
+
+[sub_resource type="GDScript" id="GDScript_upfqb"]
+resource_name = "Zombie"
+script/source = "extends CharacterBody3D
+
+enum State { APPROACHING, BREACHING, CHASING }
+
+@export var move_speed: float = 3.0
+@export var chase_speed: float = 3.5
+@export var attack_range: float = 1.5
+@export var attack_damage: float = 10.0
+@export var attack_cooldown: float = 1.0
+@export var breach_wait_time: float = 1.2
+
+@onready var nav_agent: NavigationAgent3D = $NavigationAgent3D
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var breach_timer: Timer = $BreachTimer
+
+var state: State = State.APPROACHING
+var entry_point: Vector3
+var target_player: Node3D = null
+var can_attack: bool = true
+
+
+## Call right after add_child() -- reads the window's spawn + entry
+## markers to set starting position and the breach destination.
+func setup(window: Node3D) -> void:
+	global_position = window.get_node(\"Position\").global_position
+	entry_point = window.global_position
+
+
+func _ready() -> void:
+	if not multiplayer.is_server():
+		set_physics_process(false)
+		return
+	breach_timer.wait_time = breach_wait_time
+	breach_timer.one_shot = true
+	breach_timer.timeout.connect(func(): state = State.CHASING)
+
+
+func _physics_process(_delta: float) -> void:
+	match state:
+		State.APPROACHING:
+			_process_approaching()
+		State.BREACHING:
+			pass # just waiting on breach_timer
+		State.CHASING:
+			_process_chasing()
+
+
+## Straight-line move toward the window's interior EntryPoint --
+## deliberately not using NavigationAgent here, since the spawn spot
+## outside the map isn't on the baked navmesh.
+func _process_approaching() -> void:
+	var to_entry := entry_point - global_position
+	to_entry.y = 0.0
+
+	if to_entry.length() < 0.2:
+		velocity = Vector3.ZERO
+		state = State.BREACHING
+		if animation_player.has_animation(\"breach\"):
+			animation_player.play(\"breach\")
+		breach_timer.start()
+		return
+
+	var direction := to_entry.normalized()
+	velocity = direction * move_speed
+	look_at(global_position + direction, Vector3.UP)
+	move_and_slide()
+
+
+## Normal nav-agent chase once inside, targeting the nearest player.
+func _process_chasing() -> void:
+	target_player = _find_nearest_player()
+	if target_player == null:
+		velocity = Vector3.ZERO
+		return
+
+	if global_position.distance_to(target_player.global_position) <= attack_range:
+		velocity = Vector3.ZERO
+		_try_attack()
+		return
+
+	nav_agent.target_position = target_player.global_position
+	var next_pos := nav_agent.get_next_path_position()
+	var direction := (next_pos - global_position)
+	direction.y = 0.0
+	if direction.length() > 0.01:
+		direction = direction.normalized()
+		look_at(global_position + direction, Vector3.UP)
+
+	velocity = direction * chase_speed
+	if animation_player.has_animation(\"walk\") and animation_player.current_animation != \"walk\":
+		animation_player.play(\"walk\")
+	move_and_slide()
+
+
+func _find_nearest_player() -> Node3D:
+	var players := get_tree().get_nodes_in_group(\"players\")
+	var closest: Node3D = null
+	var closest_dist := INF
+	for p in players:
+		var d := global_position.distance_to(p.global_position)
+		if d < closest_dist:
+			closest_dist = d
+			closest = p
+	return closest
+
+
+func _try_attack() -> void:
+	if not can_attack:
+		return
+	can_attack = false
+	if target_player.has_method(\"take_damage\"):
+		target_player.take_damage(attack_damage)
+	if animation_player.has_animation(\"attack\"):
+		animation_player.play(\"attack\")
+	await get_tree().create_timer(attack_cooldown).timeout
+	can_attack = true
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gyc6d"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_g7b7a"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_050lg"]
+
+[node name="Zombie" type="CharacterBody3D" unique_id=1314463774]
+script = SubResource("GDScript_upfqb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1549543503]
+shape = SubResource("CapsuleShape3D_gyc6d")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=138906711]
+mesh = SubResource("CapsuleMesh_g7b7a")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1145547235]
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1344446]
+replication_config = SubResource("SceneReplicationConfig_050lg")
+
+[node name="BreachTimer" type="Timer" parent="." unique_id=1757530830]
+one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=10276446]
