@@ -12,11 +12,21 @@ script/source = "extends Node
 ## spawn_zombie_in_room() without an argument. Leave blank in normal play.
 @export var default_room: String = \"\"
 
+## Windows belonging to default_room — assign directly in the Inspector.
+## This room auto-registers in _ready(), so it works without ever
+## calling unlock_room().
+@export var default_room_spawns: Array[Node3D] = []
+
 @onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
 @onready var zombies_container: Node3D = $Zombies
 
 # room_name (String) -> Array[Node3D] of ZombieWindowSpawn instances
 var rooms: Dictionary = {}
+
+
+func _ready() -> void:
+	if not default_room.is_empty() and not default_room_spawns.is_empty():
+		rooms[default_room] = default_room_spawns
 
 
 ## Call when a room gets unlocked (door opened, key found, etc.) to add
@@ -52,11 +62,6 @@ func spawn_zombie_in_room(room_name: String = default_room) -> void:
 	var zombie := zombie_scene.instantiate()
 	zombie.global_position = window.get_node(\"Position\").global_position
 	zombies_container.add_child(zombie, true)
-	print(\"Func ran\")
-
-
-func _on_timer_timeout() -> void:
-	spawn_zombie_in_room()
 "
 
 [node name="SpawnManager" type="Node" unique_id=893123325]

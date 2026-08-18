@@ -10,7 +10,6 @@
 [node name="Scene0" type="Node3D" unique_id=2113724079]
 
 [node name="SpawnManager" parent="." unique_id=893123325 instance=ExtResource("1_5a7p6")]
-default_room = "SpawnRoom"
 
 [node name="SpawnRoom" type="Node3D" parent="." unique_id=1757941548]
 
