@@ -2,43 +2,47 @@
 
 [sub_resource type="GDScript" id="GDScript_g7b7a"]
 resource_name = "SpawnManager"
-script/source = "extends Node
+script/source = "
+extends Node
+
+const SPAWN_GROUP := \"ZombieSpawn\"
 
 ## Assign your zombie PackedScene here, and also add it to the
 ## MultiplayerSpawner's \"Auto Spawn List\" in the Inspector.
 @export var zombie_scene: PackedScene
 
-## Optional: set in the Inspector for quick testing so you can call
-## spawn_zombie_in_room() without an argument. Leave blank in normal play.
+## Optional: a room that's unlocked from the start, no unlock_room() call
+## needed. Must match the name of that room's container Node3D exactly.
 @export var default_room: String = \"\"
-
-## Windows belonging to default_room — assign directly in the Inspector.
-## This room auto-registers in _ready(), so it works without ever
-## calling unlock_room().
-@export var default_room_spawns: Array[Node3D] = []
 
 @onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
 @onready var zombies_container: Node3D = $Zombies
 
-# room_name (String) -> Array[Node3D] of ZombieWindowSpawn instances
-var rooms: Dictionary = {}
+var unlocked_rooms: Array[String] = []
 
 
 func _ready() -> void:
-	if not default_room.is_empty() and not default_room_spawns.is_empty():
-		rooms[default_room] = default_room_spawns
+	if not default_room.is_empty():
+		unlocked_rooms.append(default_room)
 
 
-## Call when a room gets unlocked (door opened, key found, etc.) to add
-## its windows to the spawn pool.
-func unlock_room(room_name: String, spawn_points: Array) -> void:
-	rooms[room_name] = spawn_points
+## Call when a room gets unlocked (door opened, key found, etc.).
+func unlock_room(room_name: String) -> void:
+	if not unlocked_rooms.has(room_name):
+		unlocked_rooms.append(room_name)
 
 
-## Call if a room should stop spawning zombies (locked back off, cleared
-## for the round, etc.).
+## Call if a room should stop spawning zombies.
 func lock_room(room_name: String) -> void:
-	rooms.erase(room_name)
+	unlocked_rooms.erase(room_name)
+
+
+## Finds every window in the ZombieSpawn group whose parent node is
+## named room_name. This is what makes rooms \"automatic\" -- a window
+## belongs to whichever room container it's placed under in the map.
+func get_windows_in_room(room_name: String) -> Array:
+	var all_windows := get_tree().get_nodes_in_group(SPAWN_GROUP)
+	return all_windows.filter(func(w): return w.get_parent().name == room_name)
 
 
 func spawn_zombie_in_room(room_name: String = default_room) -> void:
@@ -49,13 +53,13 @@ func spawn_zombie_in_room(room_name: String = default_room) -> void:
 		push_warning(\"SpawnManager: no room_name given and no default_room set\")
 		return
 
-	if not rooms.has(room_name):
-		push_warning(\"SpawnManager: no room registered called '%s'\" % room_name)
+	if not unlocked_rooms.has(room_name):
+		push_warning(\"SpawnManager: room '%s' is not unlocked\" % room_name)
 		return
 
-	var candidates: Array = rooms[room_name]
+	var candidates := get_windows_in_room(room_name)
 	if candidates.is_empty():
-		push_warning(\"SpawnManager: no enabled spawn points in room '%s'\" % room_name)
+		push_warning(\"SpawnManager: no windows found under a node named '%s'\" % room_name)
 		return
 
 	var window: Node3D = candidates.pick_random()

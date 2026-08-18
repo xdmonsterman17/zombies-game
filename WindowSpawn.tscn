@@ -2,8 +2,7 @@
 
 [sub_resource type="QuadMesh" id="QuadMesh_gyc6d"]
 
-[node name="WindowSpawn" type="Node3D" unique_id=1470716454]
-metadata/Enabled = false
+[node name="WindowSpawn" type="Node3D" unique_id=1470716454 groups=["ZombieSpawn"]]
 
 [node name="Position" type="Marker3D" parent="." unique_id=1661275829]
 
