@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://ckykro8alswth"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g7b7a"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_g7b7a"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0rwas"]
+
+[node name="Player" type="CharacterBody3D" unique_id=1538617415 groups=["players"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1649897336]
+shape = SubResource("CapsuleShape3D_g7b7a")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=1955584897]
+mesh = SubResource("CapsuleMesh_g7b7a")
+
+[node name="Head" type="Node3D" parent="." unique_id=1383365545]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head" unique_id=165220415]
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1202126218]
+replication_config = SubResource("SceneReplicationConfig_0rwas")
