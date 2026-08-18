@@ -1,3 +1,24 @@
 [gd_scene format=3 uid="uid://d3kxo1jqbw5k"]
 
+[ext_resource type="PackedScene" uid="uid://bh1x74de1dmf1" path="res://SpawnManager.tscn" id="1_5a7p6"]
+[ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://WindowSpawn.tscn" id="2_c6aqj"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g7b7a"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_gyc6d"]
+
 [node name="Scene0" type="Node3D" unique_id=2113724079]
+
+[node name="SpawnManager" parent="." unique_id=893123325 instance=ExtResource("1_5a7p6")]
+
+[node name="WindowSpawn" parent="." unique_id=1470716454 instance=ExtResource("2_c6aqj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=1717068960]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=1291159975]
+shape = SubResource("BoxShape3D_g7b7a")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor/CollisionShape3D" unique_id=1777809759]
+mesh = SubResource("BoxMesh_gyc6d")
