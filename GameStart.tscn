@@ -9,6 +9,8 @@ script/source = "extends Node
 @export var player_scene: PackedScene
 @export var port: int = 7777
 @export var max_players: int = 4
+@export var spawn_radius: float = 10.0
+@export var spawn_center: Vector3 = Vector3.ZERO
 
 @onready var spawner: MultiplayerSpawner = $MultiplayerSpawner
 @onready var players_container: Node3D = $Players
@@ -18,7 +20,7 @@ func _ready() -> void:
 	spawner.spawn_path = players_container.get_path()
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-	host_game() # TEMP: auto-host for testing, remove once you have a menu
+	host_game()
 
 
 func host_game() -> void:
@@ -28,7 +30,7 @@ func host_game() -> void:
 		push_error(\"GameStart: failed to host, error %s\" % error)
 		return
 	multiplayer.multiplayer_peer = peer
-	_spawn_player(multiplayer.get_unique_id()) # host doesn't get its own peer_connected signal
+	_spawn_player(multiplayer.get_unique_id())
 
 
 func join_game(address: String) -> void:
@@ -57,13 +59,24 @@ func _spawn_player(id: int) -> void:
 	if not multiplayer.is_server():
 		return
 	var player := player_scene.instantiate()
-	player.name = str(id) # this is what player.gd reads to set its own authority
+	player.name = str(id)
+	
+	# Randomize spawn position within radius
+	var random_angle = randf() * TAU
+	var random_distance = randf() * spawn_radius
+	player.position = spawn_center + Vector3(
+		cos(random_angle) * random_distance,
+		0.0,
+		sin(random_angle) * random_distance
+	)
+	
 	players_container.add_child(player, true)
 "
 
 [node name="GameStart" type="Node" unique_id=375894857]
 script = SubResource("GDScript_g7b7a")
 player_scene = ExtResource("1_kxp4l")
+spawn_radius = 5.0
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=844563134]
 spawn_path = NodePath("../Players")

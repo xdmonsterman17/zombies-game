@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://d1iobow1fgf25" path="res://GameStart.tscn" id="1_g6sgh"]
 [ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://WindowSpawn.tscn" id="2_c6aqj"]
 [ext_resource type="PackedScene" uid="uid://c3cvvg1ger8cq" path="res://zombie.tscn" id="2_g6sgh"]
+[ext_resource type="PackedScene" uid="uid://be6utnh1404he" path="res://WaveManager.tscn" id="4_scpmv"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_c6aqj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -41,6 +42,9 @@ environment = SubResource("Environment_scpmv")
 [node name="SpawnManager" parent="." unique_id=893123325 instance=ExtResource("1_5a7p6")]
 zombie_scene = ExtResource("2_g6sgh")
 default_room = "SpawnRoom"
+
+[node name="WaveManager" parent="." unique_id=466661713 instance=ExtResource("4_scpmv")]
+target_room = "SpawnRoom"
 
 [node name="SpawnRoom" type="NavigationRegion3D" parent="." unique_id=362494419]
 navigation_mesh = SubResource("NavigationMesh_6qx4q")
@@ -85,12 +89,6 @@ metadata/Enabled = true
 
 [node name="Position" parent="SpawnRoom/WindowSpawn2" index="0" unique_id=1661275829]
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 1.2152378e-07, 0, -1.39007)
-
-[node name="Timer" type="Timer" parent="." unique_id=587302835]
-wait_time = 5.0
-autostart = true
-
-[connection signal="timeout" from="Timer" to="SpawnManager" method="_on_timer_timeout"]
 
 [editable path="SpawnRoom/WindowSpawn"]
 [editable path="SpawnRoom/WindowSpawn2"]

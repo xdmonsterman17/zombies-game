@@ -139,6 +139,7 @@ shape = SubResource("CapsuleShape3D_gyc6d")
 mesh = SubResource("CapsuleMesh_g7b7a")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1145547235]
+avoidance_enabled = true
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1344446]
 replication_config = SubResource("SceneReplicationConfig_050lg")
