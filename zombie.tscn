@@ -23,11 +23,12 @@ var target_player: Node3D = null
 var can_attack: bool = true
 
 
-## Call right after add_child() -- reads the window's spawn + entry
-## markers to set starting position and the breach destination.
+## Call right after add_child() -- reads the window's spawn position and
+## sets the nav-mesh destination it should path to before breaching.
 func setup(window: Node3D) -> void:
 	global_position = window.get_node(\"Position\").global_position
 	entry_point = window.global_position
+	nav_agent.target_position = entry_point
 
 
 func _ready() -> void:
@@ -49,14 +50,10 @@ func _physics_process(_delta: float) -> void:
 			_process_chasing()
 
 
-## Straight-line move toward the window's interior EntryPoint --
-## deliberately not using NavigationAgent here, since the spawn spot
-## outside the map isn't on the baked navmesh.
+## Pathfinds to the window's entry point through the (blocked-off but
+## still nav-mapped) back area, same as the chase phase does.
 func _process_approaching() -> void:
-	var to_entry := entry_point - global_position
-	to_entry.y = 0.0
-
-	if to_entry.length() < 0.2:
+	if nav_agent.is_navigation_finished():
 		velocity = Vector3.ZERO
 		state = State.BREACHING
 		if animation_player.has_animation(\"breach\"):
@@ -64,9 +61,14 @@ func _process_approaching() -> void:
 		breach_timer.start()
 		return
 
-	var direction := to_entry.normalized()
+	var next_pos := nav_agent.get_next_path_position()
+	var direction := (next_pos - global_position)
+	direction.y = 0.0
+	if direction.length() > 0.01:
+		direction = direction.normalized()
+		look_at(global_position + direction, Vector3.UP)
+
 	velocity = direction * move_speed
-	look_at(global_position + direction, Vector3.UP)
 	move_and_slide()
 
 
@@ -112,6 +114,7 @@ func _try_attack() -> void:
 	if not can_attack:
 		return
 	can_attack = false
+	print(\"Zombie attacking \", target_player.name, \" for \", attack_damage)
 	if target_player.has_method(\"take_damage\"):
 		target_player.take_damage(attack_damage)
 	if animation_player.has_animation(\"attack\"):
