@@ -62,6 +62,10 @@ func spawn_zombie_in_room(room_name: String = default_room) -> void:
 	var zombie := zombie_scene.instantiate()
 	zombie.global_position = window.get_node(\"Position\").global_position
 	zombies_container.add_child(zombie, true)
+
+
+func _on_timer_timeout() -> void:
+	spawn_zombie_in_room()
 "
 
 [node name="SpawnManager" type="Node" unique_id=893123325]
