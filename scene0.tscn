@@ -27,6 +27,10 @@ mesh = SubResource("BoxMesh_gyc6d")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
 metadata/Enabled = true
 
+[node name="WindowSpawn2" parent="SpawnRoom" unique_id=1517269612 instance=ExtResource("2_c6aqj")]
+transform = Transform3D(-0.99999994, 0, -8.742277e-08, 0, 1, 0, 8.742277e-08, 0, -0.99999994, 0, 0, 5)
+metadata/Enabled = true
+
 [node name="Timer" type="Timer" parent="." unique_id=587302835]
 autostart = true
 
