@@ -2,8 +2,7 @@
 
 [sub_resource type="GDScript" id="GDScript_g7b7a"]
 resource_name = "SpawnManager"
-script/source = "
-extends Node
+script/source = "extends Node
 
 const SPAWN_GROUP := \"ZombieSpawn\"
 
@@ -64,8 +63,8 @@ func spawn_zombie_in_room(room_name: String = default_room) -> void:
 
 	var window: Node3D = candidates.pick_random()
 	var zombie := zombie_scene.instantiate()
-	zombie.global_position = window.get_node(\"Position\").global_position
 	zombies_container.add_child(zombie, true)
+	zombie.setup(window)
 
 
 func _on_timer_timeout() -> void:
