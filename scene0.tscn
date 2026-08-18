@@ -10,16 +10,23 @@
 [node name="Scene0" type="Node3D" unique_id=2113724079]
 
 [node name="SpawnManager" parent="." unique_id=893123325 instance=ExtResource("1_5a7p6")]
+default_room = "SpawnRoom"
 
-[node name="WindowSpawn" parent="." unique_id=1470716454 instance=ExtResource("2_c6aqj")]
+[node name="SpawnRoom" type="Node3D" parent="." unique_id=1757941548]
+
+[node name="Floor" type="StaticBody3D" parent="SpawnRoom" unique_id=1717068960]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpawnRoom/Floor" unique_id=1291159975]
+shape = SubResource("BoxShape3D_g7b7a")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SpawnRoom/Floor/CollisionShape3D" unique_id=1777809759]
+mesh = SubResource("BoxMesh_gyc6d")
+
+[node name="WindowSpawn" parent="SpawnRoom" unique_id=1470716454 instance=ExtResource("2_c6aqj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
 metadata/Enabled = true
 
-[node name="Floor" type="StaticBody3D" parent="." unique_id=1717068960]
-transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, -0.5, 0)
+[node name="Timer" type="Timer" parent="." unique_id=587302835]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=1291159975]
-shape = SubResource("BoxShape3D_g7b7a")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor/CollisionShape3D" unique_id=1777809759]
-mesh = SubResource("BoxMesh_gyc6d")
+[connection signal="timeout" from="Timer" to="SpawnManager" method="_on_timer_timeout"]
