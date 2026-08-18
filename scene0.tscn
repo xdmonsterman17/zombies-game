@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://d3kxo1jqbw5k"]
 
 [ext_resource type="PackedScene" uid="uid://bh1x74de1dmf1" path="res://SpawnManager.tscn" id="1_5a7p6"]
+[ext_resource type="PackedScene" uid="uid://d1iobow1fgf25" path="res://GameStart.tscn" id="1_g6sgh"]
 [ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://WindowSpawn.tscn" id="2_c6aqj"]
 [ext_resource type="PackedScene" uid="uid://c3cvvg1ger8cq" path="res://zombie.tscn" id="2_g6sgh"]
 
@@ -34,6 +35,8 @@ shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=714141421]
 environment = SubResource("Environment_scpmv")
+
+[node name="GameStart" parent="." unique_id=375894857 instance=ExtResource("1_g6sgh")]
 
 [node name="SpawnManager" parent="." unique_id=893123325 instance=ExtResource("1_5a7p6")]
 zombie_scene = ExtResource("2_g6sgh")

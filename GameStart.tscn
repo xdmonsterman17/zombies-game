@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://d1iobow1fgf25"]
+
+[ext_resource type="PackedScene" uid="uid://ckykro8alswth" path="res://Player.tscn" id="1_kxp4l"]
+
+[sub_resource type="GDScript" id="GDScript_g7b7a"]
+resource_name = "GameStart"
+script/source = "extends Node
+
+@export var player_scene: PackedScene
+@export var port: int = 7777
+@export var max_players: int = 4
+
+@onready var spawner: MultiplayerSpawner = $MultiplayerSpawner
+@onready var players_container: Node3D = $Players
+
+
+func _ready() -> void:
+	spawner.spawn_path = players_container.get_path()
+	multiplayer.peer_connected.connect(_on_peer_connected)
+	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	host_game() # TEMP: auto-host for testing, remove once you have a menu
+
+
+func host_game() -> void:
+	var peer := ENetMultiplayerPeer.new()
+	var error := peer.create_server(port, max_players)
+	if error != OK:
+		push_error(\"GameStart: failed to host, error %s\" % error)
+		return
+	multiplayer.multiplayer_peer = peer
+	_spawn_player(multiplayer.get_unique_id()) # host doesn't get its own peer_connected signal
+
+
+func join_game(address: String) -> void:
+	var peer := ENetMultiplayerPeer.new()
+	var error := peer.create_client(address, port)
+	if error != OK:
+		push_error(\"GameStart: failed to connect, error %s\" % error)
+		return
+	multiplayer.multiplayer_peer = peer
+
+
+func _on_peer_connected(id: int) -> void:
+	if multiplayer.is_server():
+		_spawn_player(id)
+
+
+func _on_peer_disconnected(id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	var player := players_container.get_node_or_null(str(id))
+	if player:
+		player.queue_free()
+
+
+func _spawn_player(id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	var player := player_scene.instantiate()
+	player.name = str(id) # this is what player.gd reads to set its own authority
+	players_container.add_child(player, true)
+"
+
+[node name="GameStart" type="Node" unique_id=375894857]
+script = SubResource("GDScript_g7b7a")
+player_scene = ExtResource("1_kxp4l")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=844563134]
+
+[node name="Players" type="Node3D" parent="." unique_id=596142338]
