@@ -56,7 +56,7 @@ func spawn_zombie_in_room(room_name: String = default_room) -> void:
 
 
 func _on_timer_timeout() -> void:
-	spawn_zombie_in_room(\"SpawnRoom\")
+	spawn_zombie_in_room()
 "
 
 [node name="SpawnManager" type="Node" unique_id=893123325]
