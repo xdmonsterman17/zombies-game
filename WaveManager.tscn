@@ -55,11 +55,24 @@ func _get_room_with_player() -> String:
 	if players.is_empty():
 		return \"\"
 	
+	var occupied_rooms: Array[String] = []
+	
 	for room in available_rooms:
 		if room.get_meta(\"unlocked\", false):
-			return room.name
+			# Grab the Area3D child from the room
+			var area: Area3D = room.get_node_or_null(\"Area3D\")
+			if area:
+				# Check if any of the overlapping bodies are players
+				for body in area.get_overlapping_bodies():
+					if body.is_in_group(\"players\"):
+						occupied_rooms.append(room.name)
+						break # We confirmed at least one player is here, move to next room
 	
-	return \"\"
+	if occupied_rooms.is_empty():
+		return \"\"
+		
+	# Pick a random occupied room so zombies don't always spawn in the same one
+	return occupied_rooms.pick_random()
 
 
 func _on_spawn_timer_timeout() -> void:
