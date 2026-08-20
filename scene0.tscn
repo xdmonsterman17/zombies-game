@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bh1x74de1dmf1" path="res://SpawnManager.tscn" id="1_5a7p6"]
 [ext_resource type="PackedScene" uid="uid://d1iobow1fgf25" path="res://GameStart.tscn" id="1_g6sgh"]
 [ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://WindowSpawn.tscn" id="2_c6aqj"]
-[ext_resource type="PackedScene" uid="uid://c3cvvg1ger8cq" path="res://zombie.tscn" id="2_g6sgh"]
+[ext_resource type="PackedScene" uid="uid://c3cvvg1ger8cq" path="res://Character scenes/zombie.tscn" id="2_g6sgh"]
 [ext_resource type="PackedScene" uid="uid://be6utnh1404he" path="res://WaveManager.tscn" id="4_scpmv"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_c6aqj"]
@@ -84,12 +84,18 @@ metadata/Enabled = true
 [node name="Position" parent="SpawnRoom/WindowSpawn" index="0" unique_id=1661275829]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.1816268)
 
+[node name="MeshInstance3D" parent="SpawnRoom/WindowSpawn" index="1" unique_id=1881881167]
+transform = Transform3D(-0.9993651, 0, -0.03563261, 0, 1, 0, 0.03563261, 0, -0.9993651, 0, 1.7, 0)
+
 [node name="WindowSpawn2" parent="SpawnRoom" unique_id=1517269612 instance=ExtResource("2_c6aqj")]
 transform = Transform3D(-0.99999994, 0, -8.742277e-08, 0, 1, 0, 8.742277e-08, 0, -0.99999994, 0, 0, 5)
 metadata/Enabled = true
 
 [node name="Position" parent="SpawnRoom/WindowSpawn2" index="0" unique_id=1661275829]
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 1.2152378e-07, 0, -1.39007)
+
+[node name="MeshInstance3D" parent="SpawnRoom/WindowSpawn2" index="1" unique_id=1881881167]
+transform = Transform3D(-0.9998162, 0, 0.019170998, 0, 1, 0, -0.019170998, 0, -0.9998162, 0, 1.7, 0)
 
 [node name="Area3D" type="Area3D" parent="SpawnRoom" unique_id=149267278]
 
