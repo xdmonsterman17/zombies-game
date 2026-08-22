@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://b42g5k0jvvypv"]
+[gd_scene format=3 uid="uid://cfpm1tpp0plye"]
 
-[ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://WindowSpawn.tscn" id="1_window"]
+[ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://Managers/WindowSpawn.tscn" id="1_window"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_room"]
 geometry_parsed_geometry_type = 1
@@ -11,9 +11,6 @@ size = Vector3(10, 1, 9.982422)
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 size = Vector3(10, 1, 10)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_area"]
-size = Vector3(10, 5, 10)
 
 [node name="RoomTemplate" type="NavigationRegion3D" unique_id=361597278 groups=["Room"]]
 navigation_mesh = SubResource("NavigationMesh_room")
@@ -28,12 +25,6 @@ shape = SubResource("BoxShape3D_floor")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor/CollisionShape3D" unique_id=1033375248]
 mesh = SubResource("BoxMesh_floor")
-
-[node name="Area3D" type="Area3D" parent="." unique_id=1958671123]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1927895346]
-shape = SubResource("BoxShape3D_area")
 
 [node name="WindowSpawn" parent="." unique_id=787473075 instance=ExtResource("1_window")]
 transform = Transform3D(-0.99871933, 0, 0.050592836, 0, 1, 0, -0.050592836, 0, -0.99871933, 0.072477534, 0.023238063, -5.000051)

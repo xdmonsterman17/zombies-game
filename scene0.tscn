@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://d3kxo1jqbw5k"]
 
-[ext_resource type="PackedScene" uid="uid://bh1x74de1dmf1" path="res://SpawnManager.tscn" id="1_5a7p6"]
+[ext_resource type="PackedScene" uid="uid://bh1x74de1dmf1" path="res://Managers/SpawnManager.tscn" id="1_5a7p6"]
 [ext_resource type="PackedScene" uid="uid://d1iobow1fgf25" path="res://GameStart.tscn" id="1_g6sgh"]
-[ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://WindowSpawn.tscn" id="2_c6aqj"]
+[ext_resource type="PackedScene" uid="uid://7fkm5b5gnvdt" path="res://Managers/WindowSpawn.tscn" id="2_c6aqj"]
 [ext_resource type="PackedScene" uid="uid://c3cvvg1ger8cq" path="res://Character scenes/zombie.tscn" id="2_g6sgh"]
-[ext_resource type="PackedScene" uid="uid://be6utnh1404he" path="res://WaveManager.tscn" id="4_scpmv"]
+[ext_resource type="PackedScene" uid="uid://be6utnh1404he" path="res://Managers/WaveManager.tscn" id="4_scpmv"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_c6aqj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)

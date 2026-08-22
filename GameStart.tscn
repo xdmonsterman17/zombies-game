@@ -71,6 +71,11 @@ func _spawn_player(id: int) -> void:
 	)
 	
 	players_container.add_child(player, true)
+	
+# Stories of one of the devs 
+# I Accidentally pressed save when i fucked up, pressing ctrl+s instead of ctrl=z and accidentally saved a major fuck up on my part lmaooo
+# i think i fixed it but UGH 
+# Tell Rockstar Games that they should hire me.
 "
 
 [node name="GameStart" type="Node" unique_id=375894857]
